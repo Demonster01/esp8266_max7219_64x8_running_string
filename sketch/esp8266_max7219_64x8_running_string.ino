@@ -8,7 +8,7 @@
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
 
-#define debug
+//#define debug
 
 // display settings
 int pinCS = 4; // Attach display CS to this pin (GPIO4), DIN to MOSI (GPIO13) and CLK to SCK (GPIO14)
@@ -67,8 +67,8 @@ void handleKey() {
   }
 }
 
-String utf8rus(String source)
-{
+// converts utf8 cyrillic to cp1251
+String utf8ukr(String source) {
   int i,k;
   String target;
   unsigned char n;
@@ -81,36 +81,60 @@ String utf8rus(String source)
     n = source[i];
     i++;
 
-    if (n >= 0xC0) {
+    if (n >= 0xC0) { // 0xC0 = B1100 0000
       switch (n) {
-        case 0xD0: {
+        case 0xD0: { // 0xD0 = B1101 0000
           n = source[i];
           i++;
           if (n == 0x81) {
-            n = 0xA8;
+            n = 0xA8; // Ё
             break;
           }
-          if (n >= 0x90 && n <= 0xBF) {
-            n = n + 0x2F;
+          if (n == 0x84) {
+            n = 0xAA; // Є
+            break;
+          }
+          if (n == 0x86) {
+            n = 0xB1; // І
+            break;
+          }
+          if (n == 0x87) {
+            n = 0xAF; // Ї
+            break;
+          }
+          if (n >= 0x90 && n <= 0xBF) { // from А to п
+            n += 0x2F;
           }
           break;
         }
-        case 0xD1: {
+        case 0xD1: { // 0xD1 = B1101 0001
           n = source[i];
           i++;
           if (n == 0x91) {
-            n = 0xB8;
+            n = 0xB8; // ё
             break;
           }
-          if (n >= 0x80 && n <= 0x8F) {
-            n = n + 0x6F;
+          if (n == 0x94) {
+            n = 0xB9; // є
+            break;
+          }
+          if (n == 0x96) {
+            n = 0xB2; // і
+            break;
+          }
+          if (n == 0x97) {
+            n = 0xBE; // ї
+            break;
+          }
+          if (n >= 0x80 && n <= 0x8F) { // from р to я
+            n += 0x6F;
           }
           break;
         }
       }
     }
     m[0] = n;
-    target = target + String(m);
+    target += String(m);
   }
   return target;
 }
@@ -299,7 +323,7 @@ void userInterract() {
   File f = SPIFFS.open("/tape.txt", "w");
   f.print(tape);  
   f.close();
-  tape1 = utf8rus(tape);
+  tape1 = utf8ukr(tape);
   // clear button flag
   keyFlag = LOW;
   #ifdef debug
@@ -349,12 +373,12 @@ void setup() {
   }
   f.close();
   
-  tape1 = utf8rus(tape);
+  tape1 = utf8ukr(tape);
   
   // init displays
   for (int i = 0; i < numberOfHorizontalDisplays; i++) {
     matrix.setPosition(i, i, 0); // all displays stays in one row
-    matrix.setRotation(i, 1);    // all displays position is 90 degrees clockwise  
+    matrix.setRotation(i, 1);    // all displays position is 90 degrees clockwise
   }
 
   // init button pin
