@@ -26,7 +26,7 @@ String utf8ukr(String source) {
             break;
           }
           if (n == 0x86) {
-            n = 0xB2; // І
+            n = 0xB1; // І
             break;
           }
           if (n == 0x87) {
@@ -46,15 +46,15 @@ String utf8ukr(String source) {
             break;
           }
           if (n == 0x94) {
-            n = 0xBA; // є
+            n = 0xB9; // є
             break;
           }
           if (n == 0x96) {
-            n = 0xB3; // і
+            n = 0xB2; // і
             break;
           }
           if (n == 0x97) {
-            n = 0xBF; // ї
+            n = 0xBE; // ї
             break;
           }
           if (n >= 0x80 && n <= 0x8F) { // from р to я
