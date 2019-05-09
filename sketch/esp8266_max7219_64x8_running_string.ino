@@ -306,7 +306,7 @@ void userInterract() {
     }    
     // interract with user from web browser
     server.handleClient();
-    delay(15);
+    delay(15); // !this delay is necessary to work correct! experimentally determined
     // update MDNS
     MDNS.update();
     // handle button
